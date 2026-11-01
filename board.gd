@@ -1,8 +1,8 @@
 @tool
 extends Node2D
 # Globals
-@export var square_h = 80
-@export var square_v = 80
+@export var square_h: float = 80
+@export var square_v: float =  80
 @export var square_color: Color = Color("#9b0a22")
 @export var square_alt_color: Color = Color("#d9e1cc")
 const PIECE_SCENE = preload("res://piece.tscn")
@@ -27,8 +27,8 @@ func _draw() -> void:
 		var color1 = square_alt_color if (y % 2 == 0) else square_color
 		var color2 = square_color if (y % 2 == 0) else square_alt_color
 		for x in 4:
-			draw_rect(Rect2((x * square_h * 2) + square_h, y * square_v, square_h, square_v), color1)
-			draw_rect(Rect2((x * square_h * 2) + square_h * 2, y * square_v, square_h, square_v), color2)
+			draw_rect(Rect2((x * square_h * 2), y * square_v, square_h, square_v), color1)
+			draw_rect(Rect2((x * square_h * 2) + square_h, y * square_v, square_h, square_v), color2)
 			
 func init_grid():
 	grid.clear()
@@ -41,24 +41,40 @@ func init_grid():
 func spawn_pieces():
 	for y in 8:
 		for x in 8:
-			var pos_X = (x * square_h) + square_h 
-			var pos_Y = y * square_v
-			var is_alt_x = false if (x % 2 != 0) else true      # is this an alternating column?
-			var is_alt_y = false if (y % 2 == 0) else true      # is this an alternating row?
-			var skip_rows = true if (y < 3 or y > 4) else false # rows to skip
+			var cell := Vector2i(x, y)
+			var is_dark := (x + y) % 2 != 0   						 # dark square on odd numbers
+			var skip_rows = true if (y < 3 or y > 4) else false      # rows to skip 
 			var piece_side = "hotdog" if (y < 3) else "burger"
-			match [is_alt_x, is_alt_y, skip_rows]:
-				[false, false, true]: spawn(pos_X ,pos_Y, x, y, piece_side)
-				[true, true, true]: spawn(pos_X ,pos_Y, x, y, piece_side)
+			if (is_dark and skip_rows): spawn(cell, piece_side)
 			
-func spawn(pos_X, pos_Y, x, y, piece_side):
+func spawn(cell: Vector2i, piece_side: String):
 	var p = PIECE_SCENE.instantiate()
-	p.position = Vector2(pos_X, pos_Y)
+	p.position = grid_to_screen(cell)
 	p.side = piece_side
 	var the_piece = Tile.HOTDOG if (piece_side == "hotdog") else Tile.BURGER
-	grid[y][x] = the_piece
+	grid[cell.y][cell.x] = the_piece
 	add_child(p)
+	
+# Grid cells are Vector2i(col, row): x = column, y = row
+func screen_to_grid(pos: Vector2) -> Vector2i:
+	var col := floori(pos.x / square_h)
+	var row := floori(pos.y / square_v)
+	var cell := Vector2i(col, row)
+	if not is_on_board(cell):
+		return Vector2i(-1, -1)
+	return cell
+	
+# Center of a grid square, in Board-local pixels. cell = Vector2i(col, row)
+func grid_to_screen(cell: Vector2i) -> Vector2:
+	var x := cell.x * square_h + square_h/2
+	var y := cell.y * square_v + square_v/2
+	return Vector2(x, y)
 
+func is_on_board(cell: Vector2i) -> bool:
+	return cell.x >= 0 and cell.x < 8 and cell.y >= 0 and cell.y < 8
+	
+
+# Utility Functions
 func print_grid():
 	# To help with debugging, print grid to console
 	var line := ""
