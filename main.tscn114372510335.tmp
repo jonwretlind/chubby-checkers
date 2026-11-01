@@ -1,0 +1,11 @@
+[gd_scene format=3 uid="uid://bgttybnh04jb8"]
+
+[ext_resource type="PackedScene" uid="uid://b6bl05w1pw1e7" path="res://board.tscn" id="2_0xm2m"]
+
+[node name="Main" type="Node2D" unique_id=954654182]
+metadata/_edit_vertical_guides_ = [299.0]
+
+[node name="Board" parent="." unique_id=1192796683 instance=ExtResource("2_0xm2m")]
+position = Vector2(302, 35)
+square_h = 80
+square_v = 70

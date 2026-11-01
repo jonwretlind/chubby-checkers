@@ -12,6 +12,7 @@ var grid: Array[Array] = []
 const NO_CELL := Vector2i(-1, -1)
 var selected_cell: Vector2i = NO_CELL
 var current_turn: Team = Team.BURGER  # BURGERs start first
+var pieces: Dictionary = {}
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -40,6 +41,11 @@ func _unhandled_input(event: InputEvent) -> void:
 		else:
 			selected_cell = cell
 		queue_redraw()
+	elif selected_cell != NO_CELL and is_simple_move(selected_cell, cell) :
+		move_piece(selected_cell, cell)
+		queue_redraw()
+		end_turn()
+		print_grid()
 	
 # Painting
 func _draw() -> void:
@@ -75,6 +81,7 @@ func spawn(cell: Vector2i, piece_side: String):
 	var p = PIECE_SCENE.instantiate()
 	p.position = grid_to_screen(cell)
 	p.side = piece_side
+	pieces[cell] = p
 	var the_piece = Tile.HOTDOG if (piece_side == "hotdog") else Tile.BURGER
 	grid[cell.y][cell.x] = the_piece
 	add_child(p)
@@ -107,6 +114,39 @@ func team_of(team: Tile) -> Team:
 				return Team.HOTDOG
 			_:
 				return Team.NONE
+
+#MOVING PIECES
+func forward_of(team: Team) -> int:
+	return -1 if team == Team.BURGER else 1
+
+# check for legal simple move
+func is_simple_move(from: Vector2i, to: Vector2i) -> bool:
+	if not is_on_board(to):
+		return false
+	if grid[to.y][to.x] != Tile.EMPTY :
+		return false
+	var step := to - from
+	var team := team_of(grid[from.y][from.x])
+	return abs(step.x) == 1 and step.y == forward_of(team)
+
+func move_piece(from: Vector2i, to: Vector2i) -> void :
+	# data
+	grid[to.y][to.x] = grid[from.y][from.x]
+	grid[from.y][from.x] = Tile.EMPTY
+	# lookup in pieces Dictionary
+	var node = pieces[from]
+	pieces.erase(from)
+	pieces[to] = node
+	# move it visually to reflect change in grid
+	node.hop()
+	var tween := create_tween()
+	tween.tween_property(node, "position", grid_to_screen(to), 0.8)
+	
+	
+func end_turn() -> void:
+	current_turn = Team.HOTDOG if current_turn == Team.BURGER else Team.BURGER
+	print("Turn: ", Team.keys()[current_turn])
+
 
 
 # Utility Functions
