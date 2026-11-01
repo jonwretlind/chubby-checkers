@@ -1,6 +1,10 @@
 extends Node2D
 var side: String = "burger"
 @onready var sprite: AnimatedSprite2D = $PieceSprite
+enum Piece {IS_KING, IS_TAKEN}
+enum PieceSide {PLAYER, OPPONENT}
+@export var piece_state: Piece
+@export var piece_side: PieceSide
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:

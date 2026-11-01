@@ -6,7 +6,7 @@ extends Node2D
 @export var square_color: Color = Color("#9b0a22")
 @export var square_alt_color: Color = Color("#d9e1cc")
 const PIECE_SCENE = preload("res://piece.tscn")
-enum Square {EMPTY, BURGER, BURGER_KING, HOTDOG, HOTDOG_KING}
+enum Tile {EMPTY, BURGER, BURGER_KING, HOTDOG, HOTDOG_KING}
 var grid: Array[Array] = []
 
 # Called when the node enters the scene tree for the first time.
@@ -35,7 +35,7 @@ func init_grid():
 	for y in range(8):
 		grid.append([])
 		for x in range(8):
-			grid[y].append(Square.EMPTY) 					# Place empty square first
+			grid[y].append(Tile.EMPTY) 					# Place empty square first
 
 			
 func spawn_pieces():
@@ -55,7 +55,7 @@ func spawn(pos_X, pos_Y, x, y, piece_side):
 	var p = PIECE_SCENE.instantiate()
 	p.position = Vector2(pos_X, pos_Y)
 	p.side = piece_side
-	var the_piece = Square.HOTDOG if (piece_side == "hotdog") else Square.BURGER
+	var the_piece = Tile.HOTDOG if (piece_side == "hotdog") else Tile.BURGER
 	grid[y][x] = the_piece
 	add_child(p)
 
@@ -66,9 +66,9 @@ func print_grid():
 		line = ""
 		for x in 8:
 			match grid[y][x]:
-				Square.EMPTY: line += ". "
-				Square.BURGER: line += "b "
-				Square.HOTDOG: line += "h "
-				Square.BURGER_KING: line += "B "
-				Square.HOTDOG_KING: line += "H "
+				Tile.EMPTY: line += ". "
+				Tile.BURGER: line += "b "
+				Tile.HOTDOG: line += "h "
+				Tile.BURGER_KING: line += "B "
+				Tile.HOTDOG_KING: line += "H "
 		print(line)
