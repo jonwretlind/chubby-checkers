@@ -7,7 +7,11 @@ extends Node2D
 @export var square_alt_color: Color = Color("#d9e1cc")
 const PIECE_SCENE = preload("res://piece.tscn")
 enum Tile {EMPTY, BURGER, BURGER_KING, HOTDOG, HOTDOG_KING}
+enum Team {NONE, BURGER, HOTDOG}
 var grid: Array[Array] = []
+const NO_CELL := Vector2i(-1, -1)
+var selected_cell: Vector2i = NO_CELL
+var current_turn: Team = Team.BURGER  # BURGERs start first
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -21,6 +25,22 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	pass
 	
+func _unhandled_input(event: InputEvent) -> void:
+	if not (event is InputEventMouseButton): 
+		return  # if it isn't a click, then exit function
+	if event.button_index != MOUSE_BUTTON_LEFT or not event.pressed: 
+		return # reject right button clicks
+	var local_pos := get_local_mouse_position()
+	var cell := screen_to_grid(local_pos)
+	if cell == NO_CELL: return
+	var tapped_team := team_of(grid[cell.y][cell.x])
+	if tapped_team == current_turn:
+		if cell == selected_cell:
+			selected_cell = NO_CELL
+		else:
+			selected_cell = cell
+		queue_redraw()
+	
 # Painting
 func _draw() -> void:
 	for y in 8:
@@ -29,6 +49,10 @@ func _draw() -> void:
 		for x in 4:
 			draw_rect(Rect2((x * square_h * 2), y * square_v, square_h, square_v), color1)
 			draw_rect(Rect2((x * square_h * 2) + square_h, y * square_v, square_h, square_v), color2)
+	if selected_cell != NO_CELL:
+		var size := Vector2(square_h, square_v)
+		var top_left := grid_to_screen(selected_cell) - size / 2.0
+		draw_rect(Rect2(top_left, size), Color(0.78, 0.517, 0.062, 1.0))
 			
 func init_grid():
 	grid.clear()
@@ -73,6 +97,17 @@ func grid_to_screen(cell: Vector2i) -> Vector2:
 func is_on_board(cell: Vector2i) -> bool:
 	return cell.x >= 0 and cell.x < 8 and cell.y >= 0 and cell.y < 8
 	
+
+# HELPER FUNCTIONS
+func team_of(team: Tile) -> Team:
+	match team:
+			Tile.BURGER, Tile.BURGER_KING :
+				return Team.BURGER
+			Tile.HOTDOG, Tile.HOTDOG_KING :
+				return Team.HOTDOG
+			_:
+				return Team.NONE
+
 
 # Utility Functions
 func print_grid():
