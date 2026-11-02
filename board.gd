@@ -13,6 +13,7 @@ const NO_CELL := Vector2i(-1, -1)
 var selected_cell: Vector2i = NO_CELL
 var current_turn: Team = Team.BURGER  # BURGERs start first
 var pieces: Dictionary = {}
+var must_continue: Vector2i = NO_CELL
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -34,18 +35,22 @@ func _unhandled_input(event: InputEvent) -> void:
 	var local_pos := get_local_mouse_position()
 	var cell := screen_to_grid(local_pos)
 	if cell == NO_CELL: return
+	if must_continue != NO_CELL:
+		if is_capture(must_continue, cell):
+			handle_capture(cell)
+		return
 	var tapped_team := team_of(grid[cell.y][cell.x])
 	if tapped_team == current_turn:
-		if cell == selected_cell:
-			selected_cell = NO_CELL
-		else:
-			selected_cell = cell
+		selected_cell = NO_CELL if cell == selected_cell else cell
 		queue_redraw()
-	elif selected_cell != NO_CELL and is_simple_move(selected_cell, cell) :
+	elif selected_cell != NO_CELL and is_capture(selected_cell, cell) :
+		handle_capture(cell)	
+	elif selected_cell != NO_CELL and is_simple_move(selected_cell, cell) and not team_has_capture(current_turn):
 		move_piece(selected_cell, cell)
 		queue_redraw()
 		end_turn()
-		print_grid()
+	print_grid() # for debugging
+
 	
 # Painting
 func _draw() -> void:
@@ -148,6 +153,58 @@ func end_turn() -> void:
 	print("Turn: ", Team.keys()[current_turn])
 
 
+# CAPTURES
+func is_enemy(grid: Tile, my_team: Team) -> bool:
+	var t := team_of(grid)
+	return t != Team.NONE and t != my_team
+	
+func is_capture(from: Vector2i, to: Vector2i) -> bool:
+	if not is_on_board(to) or grid[to.y][to.x] != Tile.EMPTY:
+		return false
+	var team := team_of(grid[from.y][from.x])
+	var step := to - from
+	if abs(step.x) != 2 or step.y != 2 * forward_of(team):
+		return false
+	var middle := from + step / 2
+	return is_enemy(grid[middle.y][middle.x], team)
+
+func remove_piece(cell: Vector2i) -> void:
+	grid[cell.y][cell.x] = Tile.EMPTY
+	var node = pieces[cell]
+	pieces.erase(cell)
+	node.queue_free()
+	
+func capture(from: Vector2i, to: Vector2i) -> void:
+	var middle := from + (to - from) / 2
+	move_piece(from, to)
+	remove_piece(middle)
+
+func captures_from(cell: Vector2i) -> Array[Vector2i]:
+	var result: Array[Vector2i] = []
+	var team := team_of(grid[cell.y][cell.x])
+	for dx in [-2, 2]:
+		var to := cell + Vector2i(dx, 2 * forward_of(team))
+		if is_capture(cell, to):
+			result.append(to)
+	return result
+	
+func team_has_capture(team: Team) -> bool:
+	for cell in pieces.keys():
+		if team_of(grid[cell.y][cell.x]) == team and not captures_from(cell).is_empty():
+			return true
+	return false
+	
+func handle_capture(cell: Vector2i) -> void:
+	capture(selected_cell, cell)
+	if not captures_from(cell).is_empty():
+		must_continue = cell
+		selected_cell = cell
+	else:
+		must_continue = NO_CELL
+		selected_cell = NO_CELL
+		end_turn()
+	queue_redraw()
+	
 
 # Utility Functions
 func print_grid():
