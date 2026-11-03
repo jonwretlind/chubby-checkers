@@ -160,7 +160,6 @@ func is_simple_move(from: Vector2i, to: Vector2i) -> bool:
 	if grid[to.y][to.x] != Tile.EMPTY :
 		return false
 	var step := to - from
-	var team := team_of(grid[from.y][from.x])
 	return abs(step.x) == 1 and step.y in row_dirs(from)
 
 func simple_moves_from(cell: Vector2i) -> Array[Vector2i]:
@@ -211,8 +210,8 @@ func move_piece(from: Vector2i, to: Vector2i) -> void :
 
 
 # CAPTURES
-func is_enemy(grid: Tile, my_team: Team) -> bool:
-	var t := team_of(grid)
+func is_enemy(tile: Tile, my_team: Team) -> bool:
+	var t := team_of(tile)
 	return t != Team.NONE and t != my_team
 	
 func is_capture(from: Vector2i, to: Vector2i) -> bool:
@@ -241,7 +240,7 @@ func captures_from(cell: Vector2i) -> Array[Vector2i]:
 	var team := team_of(grid[cell.y][cell.x])
 	for dy in row_dirs(cell):
 			for dx in [-2, 2]:
-				var to := cell + Vector2i(dx, 2 * forward_of(team))
+				var to := cell + Vector2i(dx, 2 * dy)
 				if is_capture(cell, to):
 					result.append(to)
 	return result
