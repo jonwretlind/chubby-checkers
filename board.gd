@@ -14,6 +14,9 @@ var selected_cell: Vector2i = NO_CELL
 var current_turn: Team = Team.BURGER  # BURGERs start first
 var pieces: Dictionary = {}
 var must_continue: Vector2i = NO_CELL
+var game_over := false
+const DRAW_LIMIT := 40
+var moves_since_capture := 0
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -28,6 +31,7 @@ func _process(delta: float) -> void:
 	pass
 	
 func _unhandled_input(event: InputEvent) -> void:
+	if game_over: return
 	if not (event is InputEventMouseButton): 
 		return  # if it isn't a click, then exit function
 	if event.button_index != MOUSE_BUTTON_LEFT or not event.pressed: 
@@ -108,6 +112,24 @@ func grid_to_screen(cell: Vector2i) -> Vector2:
 
 func is_on_board(cell: Vector2i) -> bool:
 	return cell.x >= 0 and cell.x < 8 and cell.y >= 0 and cell.y < 8
+
+func crown_row(team: Team) -> int:
+	return 0 if team == Team.BURGER else 7
+
+func is_king(cell: Tile) -> bool:
+	return cell == Tile.BURGER_KING or cell == Tile.HOTDOG_KING
+
+func king_of(team: Team) -> Tile:
+	return Tile.BURGER_KING if team == Team.BURGER else Tile.HOTDOG_KING
+
+func try_crown(cell: Vector2i) -> bool:
+	var tile: Tile = grid[cell.y][cell.x]
+	var team := team_of(tile)
+	if is_king(tile) or cell.y != crown_row(team):
+		return false
+	grid[cell.y][cell.x] = king_of(team)
+	pieces[cell].crown()
+	return true
 	
 
 # HELPER FUNCTIONS
@@ -123,6 +145,13 @@ func team_of(team: Tile) -> Team:
 #MOVING PIECES
 func forward_of(team: Team) -> int:
 	return -1 if team == Team.BURGER else 1
+	
+# for kings
+func row_dirs(cell: Vector2i) -> Array[int]:
+	var tile: Tile = grid[cell.y][cell.x]
+	if is_king(tile):
+		return [-1, 1]
+	return [forward_of(team_of(tile))]
 
 # check for legal simple move
 func is_simple_move(from: Vector2i, to: Vector2i) -> bool:
@@ -132,7 +161,38 @@ func is_simple_move(from: Vector2i, to: Vector2i) -> bool:
 		return false
 	var step := to - from
 	var team := team_of(grid[from.y][from.x])
-	return abs(step.x) == 1 and step.y == forward_of(team)
+	return abs(step.x) == 1 and step.y in row_dirs(from)
+
+func simple_moves_from(cell: Vector2i) -> Array[Vector2i]:
+	var result: Array[Vector2i] = []
+	for dy in row_dirs(cell):
+		for dx in [-1, 1]:
+			var to := cell + Vector2i(dx, dy)
+			if is_simple_move(cell, to):
+				result.append(to)
+	return result
+	
+func team_has_any_move(team: Team) -> bool:
+	for cell in pieces.keys():
+		if team_of(grid[cell.y][cell.x]) != team:
+			continue
+		if not captures_from(cell).is_empty() or not simple_moves_from(cell).is_empty():
+			return true
+	return false
+	
+func end_turn() -> void :
+	current_turn = Team.BURGER if current_turn == Team.HOTDOG else Team.HOTDOG
+	moves_since_capture += 1
+	if moves_since_capture >= DRAW_LIMIT :
+		game_over = true
+		print("It's a DRAW!")
+		return
+	if not team_has_any_move(current_turn):
+		game_over = true
+		var winner := Team.BURGER if current_turn == Team.HOTDOG else Team.HOTDOG
+		print(Team.keys()[winner], " WINS!")
+		return
+	print("Turn: ", Team.keys()[current_turn])
 
 func move_piece(from: Vector2i, to: Vector2i) -> void :
 	# data
@@ -148,9 +208,6 @@ func move_piece(from: Vector2i, to: Vector2i) -> void :
 	tween.tween_property(node, "position", grid_to_screen(to), 0.8)
 	
 	
-func end_turn() -> void:
-	current_turn = Team.HOTDOG if current_turn == Team.BURGER else Team.BURGER
-	print("Turn: ", Team.keys()[current_turn])
 
 
 # CAPTURES
@@ -163,7 +220,7 @@ func is_capture(from: Vector2i, to: Vector2i) -> bool:
 		return false
 	var team := team_of(grid[from.y][from.x])
 	var step := to - from
-	if abs(step.x) != 2 or step.y != 2 * forward_of(team):
+	if abs(step.x) != 2 or not((step.y/2) in row_dirs(from)):
 		return false
 	var middle := from + step / 2
 	return is_enemy(grid[middle.y][middle.x], team)
@@ -182,10 +239,11 @@ func capture(from: Vector2i, to: Vector2i) -> void:
 func captures_from(cell: Vector2i) -> Array[Vector2i]:
 	var result: Array[Vector2i] = []
 	var team := team_of(grid[cell.y][cell.x])
-	for dx in [-2, 2]:
-		var to := cell + Vector2i(dx, 2 * forward_of(team))
-		if is_capture(cell, to):
-			result.append(to)
+	for dy in row_dirs(cell):
+			for dx in [-2, 2]:
+				var to := cell + Vector2i(dx, 2 * forward_of(team))
+				if is_capture(cell, to):
+					result.append(to)
 	return result
 	
 func team_has_capture(team: Team) -> bool:
@@ -196,7 +254,9 @@ func team_has_capture(team: Team) -> bool:
 	
 func handle_capture(cell: Vector2i) -> void:
 	capture(selected_cell, cell)
-	if not captures_from(cell).is_empty():
+	moves_since_capture = 0
+	var crowned := try_crown(cell)
+	if not crowned and not captures_from(cell).is_empty():
 		must_continue = cell
 		selected_cell = cell
 	else:
