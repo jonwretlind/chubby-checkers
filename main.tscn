@@ -1,24 +1,23 @@
 [gd_scene format=3 uid="uid://bgttybnh04jb8"]
 
-[ext_resource type="Texture2D" uid="uid://b4ltylaffjkvy" path="res://assets/boomerang@2x.png" id="1_h2yge"]
+[ext_resource type="Texture2D" uid="uid://yfihmvkvu3qd" path="res://assets/cc-logo@2x.png" id="1_0xm2m"]
 [ext_resource type="PackedScene" uid="uid://b6bl05w1pw1e7" path="res://board.tscn" id="2_0xm2m"]
-[ext_resource type="Texture2D" uid="uid://uxc3egphxqww" path="res://assets/board-shadow@2x.png" id="2_h2yge"]
 
 [node name="Main" type="Node2D" unique_id=954654182]
 metadata/_edit_vertical_guides_ = [299.0]
 
-[node name="Boomerang" type="Sprite2D" parent="." unique_id=1623177165]
-position = Vector2(18, 27)
-scale = Vector2(0.22952336, 0.201748)
-texture = ExtResource("1_h2yge")
-centered = false
+[node name="Shadow" type="ColorRect" parent="." unique_id=74304984]
+offset_left = 555.0
+offset_top = 59.0
+offset_right = 1189.0
+offset_bottom = 611.0
+color = Color(0.3403393, 0.34033933, 0.3403393, 1)
 
-[node name="BoardShadow" type="Sprite2D" parent="." unique_id=379180136]
-modulate = Color(0, 0, 0, 0.8627451)
-self_modulate = Color(0.86854, 0.66114855, 0.7683008, 1)
-position = Vector2(869, 328)
-scale = Vector2(0.49685785, 0.43676355)
-texture = ExtResource("2_h2yge")
+[node name="Boomerang" type="Sprite2D" parent="." unique_id=1623177165]
+position = Vector2(40, 30)
+scale = Vector2(0.32573056, 0.31818178)
+texture = ExtResource("1_0xm2m")
+centered = false
 
 [node name="Board" parent="." unique_id=1192796683 instance=ExtResource("2_0xm2m")]
 position = Vector2(542, 43)
