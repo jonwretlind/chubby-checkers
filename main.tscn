@@ -1,16 +1,21 @@
 [gd_scene format=3 uid="uid://bgttybnh04jb8"]
 
 [ext_resource type="Texture2D" uid="uid://yfihmvkvu3qd" path="res://assets/cc-logo@2x.png" id="1_0xm2m"]
+[ext_resource type="Script" uid="uid://b0ruddvcktlrr" path="res://main.gd" id="1_7mycd"]
 [ext_resource type="PackedScene" uid="uid://b6bl05w1pw1e7" path="res://board.tscn" id="2_0xm2m"]
+[ext_resource type="PackedScene" uid="uid://cfqho8vh0fidn" path="res://hud.tscn" id="4_1bvp3"]
 
 [node name="Main" type="Node2D" unique_id=954654182]
+script = ExtResource("1_7mycd")
 metadata/_edit_vertical_guides_ = [299.0]
+metadata/_edit_horizontal_guides_ = [611.0]
 
 [node name="Shadow" type="ColorRect" parent="." unique_id=74304984]
 offset_left = 555.0
 offset_top = 59.0
 offset_right = 1189.0
 offset_bottom = 611.0
+mouse_filter = 2
 color = Color(0.3403393, 0.34033933, 0.3403393, 1)
 
 [node name="Boomerang" type="Sprite2D" parent="." unique_id=1623177165]
@@ -22,3 +27,5 @@ centered = false
 [node name="Board" parent="." unique_id=1192796683 instance=ExtResource("2_0xm2m")]
 position = Vector2(542, 43)
 square_v = 70.0
+
+[node name="Hud" parent="." unique_id=1228932635 instance=ExtResource("4_1bvp3")]

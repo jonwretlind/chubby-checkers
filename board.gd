@@ -1,4 +1,5 @@
 @tool
+class_name Board
 extends Node2D
 # Globals
 @export var square_h: float = 80
@@ -17,6 +18,11 @@ var must_continue: Vector2i = NO_CELL
 var game_over := false
 const DRAW_LIMIT := 40
 var moves_since_capture := 0
+signal turn_changed(team: Team)
+signal piece_captured(by_team: Team, total: int)
+signal multi_jump(active: bool)
+signal game_ended(winner: Team)
+var captured := { Team.BURGER: 0, Team.HOTDOG: 0 }   # pieces each team has taken
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -51,6 +57,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		handle_capture(cell)	
 	elif selected_cell != NO_CELL and is_simple_move(selected_cell, cell) and not team_has_capture(current_turn):
 		move_piece(selected_cell, cell)
+		try_crown(cell)
 		queue_redraw()
 		end_turn()
 	print_grid() # for debugging
@@ -184,14 +191,19 @@ func end_turn() -> void :
 	moves_since_capture += 1
 	if moves_since_capture >= DRAW_LIMIT :
 		game_over = true
+		var draw = "DRAW!"
+		game_ended.emit(draw)
 		print("It's a DRAW!")
 		return
 	if not team_has_any_move(current_turn):
 		game_over = true
 		var winner := Team.BURGER if current_turn == Team.HOTDOG else Team.HOTDOG
 		print(Team.keys()[winner], " WINS!")
+		game_ended.emit(winner)
 		return
+	turn_changed.emit(current_turn)
 	print("Turn: ", Team.keys()[current_turn])
+	
 
 func move_piece(from: Vector2i, to: Vector2i) -> void :
 	# data
@@ -234,10 +246,13 @@ func capture(from: Vector2i, to: Vector2i) -> void:
 	var middle := from + (to - from) / 2
 	move_piece(from, to)
 	remove_piece(middle)
+	captured[current_turn] += 1
+	piece_captured.emit(current_turn, captured[current_turn])
+	print(pieces.keys())
 
 func captures_from(cell: Vector2i) -> Array[Vector2i]:
 	var result: Array[Vector2i] = []
-	var team := team_of(grid[cell.y][cell.x])
+	#var team := team_of(grid[cell.y][cell.x])
 	for dy in row_dirs(cell):
 			for dx in [-2, 2]:
 				var to := cell + Vector2i(dx, 2 * dy)
@@ -258,9 +273,11 @@ func handle_capture(cell: Vector2i) -> void:
 	if not crowned and not captures_from(cell).is_empty():
 		must_continue = cell
 		selected_cell = cell
+		multi_jump.emit(true)
 	else:
 		must_continue = NO_CELL
 		selected_cell = NO_CELL
+		multi_jump.emit(false)
 		end_turn()
 	queue_redraw()
 	

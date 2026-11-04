@@ -150,15 +150,6 @@ animations = [{
 "frames": [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_vq3p4")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_2dvif")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_bhw3o")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_fbt38")
 }],
 "loop": 1,
 "name": &"hotdogking_idle",
@@ -189,5 +180,5 @@ metadata/_edit_horizontal_guides_ = [100.0]
 [node name="PieceSprite" type="AnimatedSprite2D" parent="." unique_id=1315331209]
 scale = Vector2(0.24, 0.24)
 sprite_frames = SubResource("SpriteFrames_f454w")
-animation = &"hotdogking_jump"
+animation = &"burgerking_idle"
 offset = Vector2(15, -68)

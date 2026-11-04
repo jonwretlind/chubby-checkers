@@ -27,6 +27,7 @@ func hop() -> void:
 	await sprite.animation_finished
 	sprite.play(anim_prefix() + "_idle")
 
+
 func anim_prefix() -> String:
 	return side + ("king" if the_king else "")
 			
