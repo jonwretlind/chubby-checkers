@@ -22,6 +22,7 @@ signal turn_changed(team: Team)
 signal piece_captured(by_team: Team, total: int)
 signal multi_jump(active: bool)
 signal game_ended(winner: Team)
+signal message(msg: String)
 var captured := { Team.BURGER: 0, Team.HOTDOG: 0 }   # pieces each team has taken
 
 # Called when the node enters the scene tree for the first time.
@@ -35,7 +36,6 @@ func _ready() -> void:
 @warning_ignore("unused_parameter")
 func _process(delta: float) -> void:
 	pass
-	
 func _unhandled_input(event: InputEvent) -> void:
 	if game_over: return
 	if not (event is InputEventMouseButton): 
@@ -44,7 +44,8 @@ func _unhandled_input(event: InputEvent) -> void:
 		return # reject right button clicks
 	var local_pos := get_local_mouse_position()
 	var cell := screen_to_grid(local_pos)
-	if cell == NO_CELL: return
+	if cell == NO_CELL:
+		return
 	if must_continue != NO_CELL:
 		if is_capture(must_continue, cell):
 			handle_capture(cell)
@@ -54,12 +55,18 @@ func _unhandled_input(event: InputEvent) -> void:
 		selected_cell = NO_CELL if cell == selected_cell else cell
 		queue_redraw()
 	elif selected_cell != NO_CELL and is_capture(selected_cell, cell) :
+		message.emit("Captured!")
 		handle_capture(cell)	
-	elif selected_cell != NO_CELL and is_simple_move(selected_cell, cell) and not team_has_capture(current_turn):
-		move_piece(selected_cell, cell)
-		try_crown(cell)
-		queue_redraw()
-		end_turn()
+	elif selected_cell != NO_CELL and is_simple_move(selected_cell, cell):
+		if team_has_capture(current_turn):
+			message.emit("You must capture!")
+		else:
+			message.emit("")
+			move_piece(selected_cell, cell)
+			selected_cell = NO_CELL
+			try_crown(cell)
+			queue_redraw()
+			end_turn()
 	print_grid() # for debugging
 
 	

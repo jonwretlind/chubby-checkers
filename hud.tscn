@@ -4,11 +4,98 @@
 [ext_resource type="FontFile" uid="uid://kv3tgome4o4m" path="res://assets/Peralta-Regular.ttf" id="2_a2258"]
 [ext_resource type="Texture2D" uid="uid://bb52ra83lm60b" path="res://assets/burger_sprites@2x.png" id="3_1xsix"]
 [ext_resource type="Texture2D" uid="uid://bvkrgxwo6ljbt" path="res://assets/hotdog_sprites@2x.png" id="4_rftc2"]
+[ext_resource type="Texture2D" uid="uid://do2uwuj0ywjgy" path="res://assets/winner-sprite@2x.png" id="5_a2258"]
+[ext_resource type="Texture2D" uid="uid://lqm1tdhqhchs" path="res://assets/draw-sprite@2x.png" id="6_1xsix"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_61f8s"]
 font = ExtResource("2_a2258")
 font_size = 20
 font_color = Color(0.34904152, 0.61114997, 0.5946838, 1)
+
+[sub_resource type="Animation" id="Animation_1xsix"]
+resource_name = "Pop In"
+length = 0.8666667
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Control/WinSprite:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.33333334, 0.8),
+"transitions": PackedFloat32Array(0.1830108, 1, 0.21022424),
+"update": 0,
+"values": [Vector2(203.00003, 30.999996), Vector2(203.00003, 30.999996), Vector2(239.98, 38)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Control/WinSprite:scale")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.33333334, 0.8),
+"transitions": PackedFloat32Array(0.153893, 0.2176377, 0.15932012),
+"update": 0,
+"values": [Vector2(0, 0.27), Vector2(0.58, 0.58), Vector2(0.45, 0.45)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Control/WinSprite:rotation")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.33333334, 0.8),
+"transitions": PackedFloat32Array(0.24148433, 1, 0.1015316),
+"update": 0,
+"values": [0.0, -0.5846852994181004, 0.0]
+}
+
+[sub_resource type="Animation" id="Animation_rftc2"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Control/WinSprite:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(203.00003, 30.999996)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Control/WinSprite:scale")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0.2704916, 0.27049166)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Control/WinSprite:rotation")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.0]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_61f8s"]
+_data = {
+&"Pop In": SubResource("Animation_1xsix"),
+&"RESET": SubResource("Animation_rftc2")
+}
 
 [node name="Hud" type="Node2D" unique_id=1228932635]
 script = ExtResource("1_640wx")
@@ -50,7 +137,7 @@ text = "CAPTURES"
 label_settings = SubResource("LabelSettings_61f8s")
 
 [node name="BurgerTurnSprite" type="Sprite2D" parent="Control" unique_id=955184792]
-position = Vector2(150, 34)
+position = Vector2(159, 34)
 scale = Vector2(0.24906144, 0.24906139)
 texture = ExtResource("3_1xsix")
 region_enabled = true
@@ -58,7 +145,7 @@ region_rect = Rect2(2.755005, 127, 297, 222)
 
 [node name="HotdogTurnSprite" type="Sprite2D" parent="Control" unique_id=753630525]
 visible = false
-position = Vector2(148, 38.999992)
+position = Vector2(158, 35)
 scale = Vector2(0.24906144, 0.24906139)
 texture = ExtResource("4_rftc2")
 region_enabled = true
@@ -73,6 +160,34 @@ theme_override_colors/font_shadow_color = Color(0.38, 0.38, 0.38, 0.72156864)
 theme_override_fonts/font = ExtResource("2_a2258")
 theme_override_font_sizes/font_size = 32
 text = "Turn:"
+
+[node name="WinSprite" type="Sprite2D" parent="Control" unique_id=62935445]
+visible = false
+position = Vector2(203.00003, 30.999996)
+scale = Vector2(0.2704916, 0.27049166)
+texture = ExtResource("5_a2258")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Control/WinSprite" unique_id=1749641706]
+root_node = NodePath("../../..")
+libraries/ = SubResource("AnimationLibrary_61f8s")
+autoplay = &"Pop In"
+
+[node name="DrawSprite" type="Sprite2D" parent="Control" unique_id=937673268]
+visible = false
+position = Vector2(253.7926, 29.473358)
+scale = Vector2(0.62741965, 0.62741965)
+texture = ExtResource("6_1xsix")
+
+[node name="Message" type="Label" parent="Control" unique_id=1999705957]
+layout_mode = 0
+offset_left = 221.0
+offset_top = 8.0
+offset_right = 346.0
+offset_bottom = 40.0
+theme_override_colors/font_color = Color(0.7137255, 0.17254902, 0.24313726, 1)
+theme_override_colors/font_shadow_color = Color(0.38039216, 0.38039216, 0.38039216, 0.72156864)
+theme_override_fonts/font = ExtResource("2_a2258")
+theme_override_font_sizes/font_size = 16
 
 [node name="Scores" type="GridContainer" parent="Control" unique_id=1125651993]
 clip_contents = true
