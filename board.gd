@@ -23,7 +23,12 @@ signal piece_captured(by_team: Team, total: int)
 signal multi_jump(active: bool)
 signal game_ended(winner: Team)
 signal message(msg: String)
+signal piece_selected
+signal piece_moved
+signal piece_crowned
+signal message_sound
 var captured := { Team.BURGER: 0, Team.HOTDOG: 0 }   # pieces each team has taken
+
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -53,16 +58,20 @@ func _unhandled_input(event: InputEvent) -> void:
 	var tapped_team := team_of(grid[cell.y][cell.x])
 	if tapped_team == current_turn:
 		selected_cell = NO_CELL if cell == selected_cell else cell
+		piece_selected.emit(cell)
 		queue_redraw()
 	elif selected_cell != NO_CELL and is_capture(selected_cell, cell) :
 		message.emit("Captured!")
+		piece_captured.emit(selected_cell, cell)
 		handle_capture(cell)	
 	elif selected_cell != NO_CELL and is_simple_move(selected_cell, cell):
 		if team_has_capture(current_turn):
 			message.emit("You must capture!")
+			message_sound.emit(selected_cell)
 		else:
 			message.emit("")
 			move_piece(selected_cell, cell)
+			piece_moved.emit(cell)
 			selected_cell = NO_CELL
 			try_crown(cell)
 			queue_redraw()
@@ -143,6 +152,7 @@ func try_crown(cell: Vector2i) -> bool:
 		return false
 	grid[cell.y][cell.x] = king_of(team)
 	pieces[cell].crown()
+	piece_crowned.emit(team)
 	return true
 	
 

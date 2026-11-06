@@ -24,8 +24,10 @@ func on_piece_captured(by_team: Board.Team, total: int) -> void:
 		
 func on_game_ended(winner) -> void:
 	if winner != 0: 
+		$Control/Message.visible = false
 		$Control/WinSprite.visible = true
 	else:
+		$Control/Message.visible = false
 		$Control/DrawSprite.visible = true
 
 func on_message(msg) -> void:

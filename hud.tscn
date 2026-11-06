@@ -174,8 +174,8 @@ autoplay = &"Pop In"
 
 [node name="DrawSprite" type="Sprite2D" parent="Control" unique_id=937673268]
 visible = false
-position = Vector2(253.7926, 29.473358)
-scale = Vector2(0.62741965, 0.62741965)
+position = Vector2(369, 48)
+scale = Vector2(0.5169139, 0.50282484)
 texture = ExtResource("6_1xsix")
 
 [node name="Message" type="Label" parent="Control" unique_id=1999705957]
