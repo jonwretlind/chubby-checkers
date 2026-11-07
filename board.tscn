@@ -5,3 +5,4 @@
 [node name="Board" type="Node2D" unique_id=1192796683]
 script = ExtResource("1_p0ybc")
 computer_team = 1
+ai_depth = null

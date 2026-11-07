@@ -30,8 +30,12 @@ signal message_sound
 var captured := { Team.BURGER: 0, Team.HOTDOG: 0 }   # pieces each team has taken
 @export var vs_computer := true
 @export var computer_team: Team = Team.HOTDOG
+@export_range(1, 6) var ai_depth := 3          # difficulty: 1 easy, 3 medium, 5 hard
 const THINK_TIME := 0.9      # a little longer than the 0.8 s hop
 var computer_busy := false
+var planned := []
+
+
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -365,8 +369,145 @@ func computer_move() -> void:
 	computer_busy = false
 	if not is_computer_turn():
 		return                        # game ended or mode changed while waiting
+	if planned.is_empty():
+		planned = best_path(current_turn)          # think once, at the start of the turn
+	if planned.size() < 2:
+		planned = []
+		return
+	var from: Vector2i = planned[0]
+	var to: Vector2i = planned[1]
+	planned.remove_at(0)                           # next time, continue from the landing square
+	if planned.size() < 2:
+		planned = []
+	play_move(from, to)
 	var moves := legal_moves(current_turn)
 	if moves.is_empty():
 		return
-	var move: Dictionary = moves.pick_random()
-	play_move(move.from, move.to)
+	#var move: Dictionary = moves.pick_random()
+	#play_move(move.from, move.to)
+	
+func cells_of(team: Team) -> Array[Vector2i]:
+	var result: Array[Vector2i] = []
+	for y in 8:
+		for x in 8:
+			if team_of(grid[y][x]) == team:
+				result.append(Vector2i(x, y))
+	return result
+
+
+# Every complete jump sequence starting from cell. Each path starts with cell.
+func jump_paths(cell: Vector2i) -> Array:
+	var paths := []
+	for to in captures_from(cell):
+		var middle := cell + (to - cell) / 2
+		var me: Tile = grid[cell.y][cell.x]
+		var victim: Tile = grid[middle.y][middle.x]
+		# make the hop on the grid
+		grid[to.y][to.x] = me
+		grid[cell.y][cell.x] = Tile.EMPTY
+		grid[middle.y][middle.x] = Tile.EMPTY
+		var crowned := not is_king(me) and to.y == crown_row(team_of(me))
+		var more := [] if crowned else jump_paths(to)     # ← the function calls itself
+		# undo the hop (backtracking)
+		grid[cell.y][cell.x] = me
+		grid[middle.y][middle.x] = victim
+		grid[to.y][to.x] = Tile.EMPTY
+		if more.is_empty():
+			paths.append([cell, to])                  # this sequence ends here
+		else:
+			for rest in more:
+				paths.append([cell] + rest)           # cell + the rest of the sequence
+	return paths
+
+
+func all_moves(team: Team) -> Array:
+	var jumps := []
+	var steps := []
+	for cell in cells_of(team):
+		jumps.append_array(jump_paths(cell))
+		for to in simple_moves_from(cell):
+			steps.append([cell, to])
+	return jumps if not jumps.is_empty() else steps   # forced capture
+	
+func apply_path(path: Array) -> void:
+	var me: Tile = grid[path[0].y][path[0].x]
+	for i in range(1, path.size()):
+		var a: Vector2i = path[i - 1]
+		var b: Vector2i = path[i]
+		grid[a.y][a.x] = Tile.EMPTY
+		if abs(b.x - a.x) == 2:                      # a jump: remove the victim
+			var mid := a + (b - a) / 2
+			grid[mid.y][mid.x] = Tile.EMPTY
+		grid[b.y][b.x] = me
+	var end: Vector2i = path[-1]                     # [-1] = last element
+	if not is_king(me) and end.y == crown_row(team_of(me)):
+		grid[end.y][end.x] = king_of(team_of(me))
+
+func evaluate(for_team: Team) -> int:
+	var score := 0
+	for y in 8:
+		for x in 8:
+			var grid: Tile = grid[y][x]
+			var team := team_of(grid)
+			if team == Team.NONE:
+				continue
+			var value := 160 if is_king(grid) else 100
+			if not is_king(grid):
+				var home := 7 if grid == Team.BURGER else 0      # start row (opposite of crown_row)
+				value += 5 * abs(y - home)
+			score += value if team == for_team else -value
+	return score
+
+const WIN := 100000
+
+# Score of the current grid for ai_team, looking depth moves ahead.
+# to_move = whose turn it is in this imagined position.
+func minimax(depth: int, to_move: Team, ai_team: Team, alpha: int, beta: int) -> int:
+	var moves := all_moves(to_move)
+	if moves.is_empty():                             # to_move can't move: they lose
+		return -WIN - depth if to_move == ai_team else WIN + depth
+	if depth == 0:
+		return evaluate(ai_team)
+	var other := Team.HOTDOG if to_move == Team.BURGER else Team.HOTDOG
+	var saved := grid
+	if to_move == ai_team:                           # computer's turn: maximize
+		var best := -WIN * 2
+		for path in moves:
+			grid = saved.duplicate(true)
+			apply_path(path)
+			best = max(best, minimax(depth - 1, other, ai_team, alpha, beta))
+			alpha = max(alpha, best)
+			if alpha >= beta:
+				break                                    # alpha-beta cut
+		grid = saved
+		return best
+	else:                                            # opponent's turn: minimize
+		var best := WIN * 2
+		for path in moves:
+			grid = saved.duplicate(true)
+			apply_path(path)
+			best = min(best, minimax(depth - 1, other, ai_team, alpha, beta))
+			beta = min(beta, best)
+			if alpha >= beta:
+				break
+		grid = saved
+		return best
+		
+
+func best_path(team: Team) -> Array:
+	var other := Team.HOTDOG if team == Team.BURGER else Team.BURGER
+	var saved := grid
+	var best_score := -WIN * 2
+	var best := []
+	var moves := all_moves(team)
+	moves.shuffle()                                # equal moves: vary the choice
+	for path in moves:
+		grid = saved.duplicate(true)
+		apply_path(path)
+		var score := minimax(ai_depth - 1, other, team, -WIN * 2, WIN * 2)
+		if score > best_score:
+			best_score = score
+			best = path
+	grid = saved
+	return best
+		
