@@ -383,8 +383,6 @@ func computer_move() -> void:
 	var moves := legal_moves(current_turn)
 	if moves.is_empty():
 		return
-	#var move: Dictionary = moves.pick_random()
-	#play_move(move.from, move.to)
 	
 func cells_of(team: Team) -> Array[Vector2i]:
 	var result: Array[Vector2i] = []
@@ -447,13 +445,13 @@ func evaluate(for_team: Team) -> int:
 	var score := 0
 	for y in 8:
 		for x in 8:
-			var grid: Tile = grid[y][x]
-			var team := team_of(grid)
+			var tile: Tile = grid[y][x]
+			var team := team_of(tile)
 			if team == Team.NONE:
 				continue
-			var value := 160 if is_king(grid) else 100
-			if not is_king(grid):
-				var home := 7 if grid == Team.BURGER else 0      # start row (opposite of crown_row)
+			var value := 160 if is_king(tile) else 100
+			if not is_king(tile):
+				var home := 7 if tile == Team.BURGER else 0      # start row (opposite of crown_row)
 				value += 5 * abs(y - home)
 			score += value if team == for_team else -value
 	return score
