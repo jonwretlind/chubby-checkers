@@ -28,7 +28,10 @@ signal piece_moved
 signal piece_crowned
 signal message_sound
 var captured := { Team.BURGER: 0, Team.HOTDOG: 0 }   # pieces each team has taken
-
+@export var vs_computer := true
+@export var computer_team: Team = Team.HOTDOG
+const THINK_TIME := 0.9      # a little longer than the 0.8 s hop
+var computer_busy := false
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -36,13 +39,17 @@ func _ready() -> void:
 		init_grid()
 		spawn_pieces()
 		print_grid()
+		if is_computer_turn(): computer_move.call_deferred()
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 @warning_ignore("unused_parameter")
 func _process(delta: float) -> void:
 	pass
+	
 func _unhandled_input(event: InputEvent) -> void:
 	if game_over: return
+	if is_computer_turn():
+		return
 	if not (event is InputEventMouseButton): 
 		return  # if it isn't a click, then exit function
 	if event.button_index != MOUSE_BUTTON_LEFT or not event.pressed: 
@@ -61,23 +68,16 @@ func _unhandled_input(event: InputEvent) -> void:
 		piece_selected.emit(cell)
 		queue_redraw()
 	elif selected_cell != NO_CELL and is_capture(selected_cell, cell) :
+		play_move(selected_cell, cell)
 		message.emit("Captured!")
-		piece_captured.emit(selected_cell, cell)
-		handle_capture(cell)	
 	elif selected_cell != NO_CELL and is_simple_move(selected_cell, cell):
 		if team_has_capture(current_turn):
 			message.emit("You must capture!")
 			message_sound.emit(selected_cell)
 		else:
+			play_move(selected_cell, cell)
 			message.emit("")
-			move_piece(selected_cell, cell)
-			piece_moved.emit(cell)
-			selected_cell = NO_CELL
-			try_crown(cell)
-			queue_redraw()
-			end_turn()
 	print_grid() # for debugging
-
 	
 # Painting
 func _draw() -> void:
@@ -219,6 +219,7 @@ func end_turn() -> void :
 		game_ended.emit(winner)
 		return
 	turn_changed.emit(current_turn)
+	if is_computer_turn(): computer_move()
 	print("Turn: ", Team.keys()[current_turn])
 	
 
@@ -291,6 +292,7 @@ func handle_capture(cell: Vector2i) -> void:
 		must_continue = cell
 		selected_cell = cell
 		multi_jump.emit(true)
+		if is_computer_turn(): computer_move()
 	else:
 		must_continue = NO_CELL
 		selected_cell = NO_CELL
@@ -313,3 +315,58 @@ func print_grid():
 				Tile.BURGER_KING: line += "B "
 				Tile.HOTDOG_KING: line += "H "
 		print(line)
+
+# ===========================
+# PLAYER V COMPUTER FUNCTIONS
+# ===========================
+
+func is_computer_turn() -> bool:
+	return vs_computer and current_turn == computer_team and not game_over
+
+# Plays a legal move. Returns false (and does nothing) if it isn't legal.
+func play_move(from: Vector2i, to: Vector2i) -> bool:
+	if is_capture(from, to):
+		selected_cell = from
+		handle_capture(to)
+		return true
+	if is_simple_move(from, to) and not team_has_capture(current_turn):
+		move_piece(from, to)
+		piece_moved.emit()
+		selected_cell = NO_CELL
+		try_crown(to)
+		queue_redraw()
+		end_turn()
+		return true
+	return false
+	
+func legal_moves(team: Team) -> Array:
+	var captures := []
+	var steps := []
+	# During a multi-jump, only further captures by that plant count
+	if must_continue != NO_CELL:
+		for to in captures_from(must_continue):
+			captures.append({ "from": must_continue, "to": to })
+		return captures
+	for cell in pieces.keys():
+		if team_of(grid[cell.y][cell.x]) != team:
+			continue
+		for to in captures_from(cell):
+			captures.append({ "from": cell, "to": to })
+		for to in simple_moves_from(cell):
+			steps.append({ "from": cell, "to": to })
+	# Forced capture: if any capture exists, only captures are legal
+	return captures if not captures.is_empty() else steps
+	
+func computer_move() -> void:
+	if computer_busy:
+		return
+	computer_busy = true
+	await get_tree().create_timer(THINK_TIME).timeout
+	computer_busy = false
+	if not is_computer_turn():
+		return                        # game ended or mode changed while waiting
+	var moves := legal_moves(current_turn)
+	if moves.is_empty():
+		return
+	var move: Dictionary = moves.pick_random()
+	play_move(move.from, move.to)
