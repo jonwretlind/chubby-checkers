@@ -27,6 +27,7 @@ func _ready() -> void:
 	board.piece_moved.connect(on_moved_sound)
 	board.piece_crowned.connect(on_crowned_sound)
 	board.game_ended.connect(on_game_ended_sound)
+	board.multi_jump.connect(on_multi_jump)
 
 func on_turn_changed(team) -> void:
 	hud.show_turn(team == board.Team.BURGER)
@@ -34,7 +35,7 @@ func on_turn_changed(team) -> void:
 func on_selected_sound(_cell) -> void:
 	$SFX/Select.play()
 	
-func on_moved_sound(_cell) -> void:
+func on_moved_sound() -> void:
 	$SFX/Move.play()
 	
 func on_crowned_sound(_team) -> void:
@@ -49,3 +50,6 @@ func on_message_sound(_msg) -> void:
 func on_game_ended_sound(_winner) -> void:
 	$SFX/Music.stop()
 	$SFX/Win.play()
+
+func on_multi_jump(active: bool) -> void:
+	hud.on_message("Multi-Jump!" if active else "")

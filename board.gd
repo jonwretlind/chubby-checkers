@@ -209,7 +209,7 @@ func end_turn() -> void :
 	if moves_since_capture >= DRAW_LIMIT :
 		game_over = true
 		var draw = "DRAW!"
-		game_ended.emit(draw)
+		game_ended.emit(Team.NONE)
 		print("It's a DRAW!")
 		return
 	if not team_has_any_move(current_turn):
