@@ -468,7 +468,7 @@ func minimax(depth: int, to_move: Team, ai_team: Team, alpha: int, beta: int) ->
 		return -WIN - depth if to_move == ai_team else WIN + depth
 	if depth == 0:
 		return evaluate(ai_team)
-	var other := Team.HOTDOG if to_move == Team.BURGER else Team.HOTDOG
+	var other := Team.HOTDOG if to_move == Team.BURGER else Team.BURGER
 	var saved := grid
 	if to_move == ai_team:                           # computer's turn: maximize
 		var best := -WIN * 2
