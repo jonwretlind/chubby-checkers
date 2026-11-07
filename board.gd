@@ -380,9 +380,6 @@ func computer_move() -> void:
 	if planned.size() < 2:
 		planned = []
 	play_move(from, to)
-	var moves := legal_moves(current_turn)
-	if moves.is_empty():
-		return
 	
 func cells_of(team: Team) -> Array[Vector2i]:
 	var result: Array[Vector2i] = []
@@ -451,7 +448,7 @@ func evaluate(for_team: Team) -> int:
 				continue
 			var value := 160 if is_king(tile) else 100
 			if not is_king(tile):
-				var home := 7 if tile == Team.BURGER else 0      # start row (opposite of crown_row)
+				var home := 7 if team == Team.BURGER else 0      # start row (opposite of crown_row)
 				value += 5 * abs(y - home)
 			score += value if team == for_team else -value
 	return score
