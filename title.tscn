@@ -1,0 +1,218 @@
+[gd_scene format=3 uid="uid://0ql36nplnxlq"]
+
+[ext_resource type="Script" uid="uid://bd6fxomhxdjck" path="res://title.gd" id="1_lx2ly"]
+[ext_resource type="Texture2D" uid="uid://b0si23giujvbp" path="res://assets/Title Screen@2x.png" id="1_y7k74"]
+[ext_resource type="FontFile" uid="uid://kv3tgome4o4m" path="res://assets/Peralta-Regular.ttf" id="2_oyqm6"]
+[ext_resource type="Texture2D" uid="uid://dpqv7ovwwyjin" path="res://assets/burger1@2x.png" id="3_7lgly"]
+[ext_resource type="Texture2D" uid="uid://ccq8bg8776sh2" path="res://assets/burger-pressed@2x.png" id="4_0824t"]
+[ext_resource type="Texture2D" uid="uid://bhq3glye16pe1" path="res://assets/hotdog1@2x.png" id="5_nuqgq"]
+[ext_resource type="Texture2D" uid="uid://bqxkpvbaq7oq3" path="res://assets/hotdog-pressed@2x.png" id="6_lx2ly"]
+[ext_resource type="Texture2D" uid="uid://bfqoi35ksele4" path="res://assets/start-btn@2x.png" id="7_0824t"]
+[ext_resource type="Texture2D" uid="uid://b3hrx07m38jat" path="res://assets/start-btn-hover@2x.png" id="8_nuqgq"]
+
+[sub_resource type="ButtonGroup" id="ButtonGroup_jil77"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ayyc2"]
+bg_color = Color(0.8784314, 0.22745098, 0.11372549, 1)
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+corner_radius_bottom_right = 20
+corner_radius_bottom_left = 20
+expand_margin_left = 20.0
+expand_margin_right = 10.0
+shadow_color = Color(0.12, 0.12, 0.12, 0.38039216)
+shadow_size = 6
+shadow_offset = Vector2(3, 3)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jil77"]
+content_margin_left = 8.0
+content_margin_top = 4.0
+content_margin_right = 8.0
+content_margin_bottom = 4.0
+bg_color = Color(0.23696288, 0.5754592, 0.4099379, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+corner_radius_bottom_right = 20
+corner_radius_bottom_left = 20
+expand_margin_left = 20.0
+expand_margin_right = 10.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_lx2ly"]
+content_margin_left = 8.0
+content_margin_top = 4.0
+content_margin_right = 8.0
+content_margin_bottom = 4.0
+bg_color = Color(0.87, 0.37062, 0.13920002, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.8570526, 0.8267882, 0.024597509, 1)
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+corner_radius_bottom_right = 20
+corner_radius_bottom_left = 20
+expand_margin_left = 20.0
+expand_margin_right = 10.0
+
+[sub_resource type="DPITexture" id="DPITexture_7lgly"]
+_source = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"12\" height=\"12\"><path fill=\"none\" stroke=\"#b2b2b2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-opacity=\".85\" stroke-width=\"2\" d=\"m2 4 4 4 4-4\"/></svg>
+"
+base_scale = 1.95
+
+[node name="Title" type="Control" unique_id=636272481]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_lx2ly")
+
+[node name="background" type="TextureRect" parent="." unique_id=929831562]
+layout_mode = 0
+offset_right = 1279.5127
+offset_bottom = 648.0
+texture = ExtResource("1_y7k74")
+expand_mode = 2
+
+[node name="BtnContainer" type="VBoxContainer" parent="." unique_id=343548906]
+layout_mode = 0
+offset_left = 140.0
+offset_top = 328.0
+offset_right = 804.0
+offset_bottom = 389.0
+
+[node name="Players" type="HBoxContainer" parent="BtnContainer" unique_id=1121858768]
+layout_mode = 2
+
+[node name="OnePlayer" type="CheckBox" parent="BtnContainer/Players" unique_id=1862311513]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8784314, 0.22745098, 0.11372549, 1)
+theme_override_colors/font_focus_color = Color(1, 0, 0, 1)
+theme_override_colors/icon_focus_color = Color(0.9411765, 0.8627451, 0.007843138, 1)
+theme_override_constants/h_separation = 10
+theme_override_constants/align_to_largest_stylebox = 0
+theme_override_fonts/font = ExtResource("2_oyqm6")
+theme_override_font_sizes/font_size = 40
+theme_override_colors/checkbox_checked_color = Color(0.9411765, 0.8627451, 0.007843138, 1)
+theme_override_colors/checkbox_unchecked_color = Color(0.23, 0.32199997, 0.46, 1)
+button_pressed = true
+text = "1 Player"
+
+[node name="spacer" type="AspectRatioContainer" parent="BtnContainer/Players" unique_id=775954527]
+custom_minimum_size = Vector2(20, 0)
+layout_mode = 2
+
+[node name="TwoPlayers" type="CheckBox" parent="BtnContainer/Players" unique_id=1288064067]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.88, 0.22923996, 0.11439999, 1)
+theme_override_colors/font_focus_color = Color(1, 0, 0, 1)
+theme_override_colors/icon_focus_color = Color(0.94, 0.86244994, 0.009399991, 1)
+theme_override_constants/h_separation = 10
+theme_override_fonts/font = ExtResource("2_oyqm6")
+theme_override_font_sizes/font_size = 40
+theme_override_colors/checkbox_checked_color = Color(0.9411765, 0.8627451, 0.007843138, 1)
+theme_override_colors/checkbox_unchecked_color = Color(0.23137255, 0.32156864, 0.45882353, 1)
+text = "2 Players"
+
+[node name="SideRow" type="HBoxContainer" parent="BtnContainer" unique_id=2137764670]
+layout_mode = 2
+offset_transform_position_ratio = Vector2(-0.285, -0.06)
+offset_transform_scale = Vector2(0.47, 0.47)
+
+[node name="SideLabel" type="Label" parent="BtnContainer/SideRow" unique_id=1453753006]
+custom_minimum_size = Vector2(120, 0)
+propagate_maximum_size = true
+layout_mode = 2
+offset_transform_position_ratio = Vector2(0.755, 0)
+offset_transform_scale = Vector2(2, 2)
+theme_override_colors/font_color = Color(0.8784314, 0.22745098, 0.11372549, 1)
+theme_override_fonts/font = ExtResource("2_oyqm6")
+theme_override_font_sizes/font_size = 40
+text = "Side: "
+
+[node name="BurgerButton" type="TextureButton" parent="BtnContainer/SideRow" unique_id=911291080]
+custom_minimum_size = Vector2(120, 100)
+custom_maximum_size = Vector2(100, 100)
+clip_contents = true
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 4
+offset_transform_position_ratio = Vector2(0.94, 0.505)
+offset_transform_scale = Vector2(2.335, 2.335)
+toggle_mode = true
+button_group = SubResource("ButtonGroup_jil77")
+texture_normal = ExtResource("3_7lgly")
+texture_pressed = ExtResource("4_0824t")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="spacer" type="AspectRatioContainer" parent="BtnContainer/SideRow" unique_id=280089575]
+custom_minimum_size = Vector2(20, 0)
+layout_mode = 2
+
+[node name="HotdogButton" type="TextureButton" parent="BtnContainer/SideRow" unique_id=975681927]
+custom_minimum_size = Vector2(140, 100)
+custom_maximum_size = Vector2(120, 100)
+propagate_maximum_size = true
+layout_mode = 2
+offset_transform_position_ratio = Vector2(1.975, 0.605)
+offset_transform_scale = Vector2(2, 2)
+toggle_mode = true
+button_group = SubResource("ButtonGroup_jil77")
+texture_normal = ExtResource("5_nuqgq")
+texture_pressed = ExtResource("6_lx2ly")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="DifficultyRow" type="HBoxContainer" parent="BtnContainer" unique_id=255580160]
+layout_mode = 2
+
+[node name="DifficultyLabel" type="Label" parent="BtnContainer/DifficultyRow" unique_id=222067175]
+custom_minimum_size = Vector2(300, 0)
+propagate_maximum_size = true
+layout_mode = 2
+offset_transform_enabled = true
+offset_transform_position_ratio = Vector2(0.08, 0)
+theme_override_colors/font_color = Color(0.8784314, 0.22745098, 0.11372549, 1)
+theme_override_fonts/font = ExtResource("2_oyqm6")
+theme_override_font_sizes/font_size = 40
+text = "Difficulty: "
+
+[node name="Difficulty" type="OptionButton" parent="BtnContainer/DifficultyRow" unique_id=859830295]
+custom_minimum_size = Vector2(180, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8745098, 0.8745098, 0.8745098, 1)
+theme_override_constants/h_separation = 10
+theme_override_fonts/font = ExtResource("2_oyqm6")
+theme_override_font_sizes/font_size = 22
+theme_override_styles/normal = SubResource("StyleBoxFlat_ayyc2")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_jil77")
+theme_override_styles/hover = SubResource("StyleBoxFlat_lx2ly")
+theme_override_constants/arrow_margin = 10
+theme_override_constants/modulate_arrow = 1
+theme_override_icons/arrow = SubResource("DPITexture_7lgly")
+expand_icon = true
+selected = 0
+item_count = 3
+popup/item_0/text = "Easy"
+popup/item_0/id = 1
+popup/item_1/text = "Medium"
+popup/item_1/id = 3
+popup/item_2/text = "Hard"
+popup/item_2/id = 5
+
+[node name="StartButton" type="TextureButton" parent="." unique_id=10030902]
+custom_maximum_size = Vector2(420, 420)
+layout_mode = 0
+offset_left = 869.0
+offset_top = 208.0
+offset_right = 1289.0
+offset_bottom = 628.0
+texture_normal = ExtResource("7_0824t")
+texture_pressed = ExtResource("8_nuqgq")
+texture_hover = ExtResource("8_nuqgq")
+texture_focused = ExtResource("8_nuqgq")
+stretch_mode = 0

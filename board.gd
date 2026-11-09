@@ -42,7 +42,10 @@ func _ready() -> void:
 	if not Engine.is_editor_hint():
 		init_grid()
 		spawn_pieces()
-		print_grid()
+		vs_computer = GameSettings.vs_computer
+		ai_depth = GameSettings.ai_depth
+		var human: Team = GameSettings.human_team
+		computer_team = Team.HOTDOG if human == Team.BURGER else Team.BURGER
 		if is_computer_turn(): computer_move.call_deferred()
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.

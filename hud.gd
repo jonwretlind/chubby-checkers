@@ -5,8 +5,11 @@ extends Node2D
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	pass # Replace with function body.
-
+	$Control/MenuButton.pressed.connect(_set_paused.bind(true))
+	$Control/PauseMenu/VBoxContainer/Resume.pressed.connect(_set_paused.bind(false))
+	$Control/PauseMenu/VBoxContainer/Restart.pressed.connect(func(): _set_paused(false); get_tree().reload_current_scene())
+	$Control/PauseMenu/VBoxContainer/MainMenu.pressed.connect(func(): _set_paused(false); get_tree().change_scene_to_file("res://title.tscn"))
+	$Control/PauseMenu/VBoxContainer/Sound.toggled.connect(_on_sound_toggled)
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
@@ -29,6 +32,15 @@ func on_game_ended(winner) -> void:
 	else:
 		$Control/Message.visible = false
 		$Control/DrawSprite.visible = true
-
+	$Control/PauseMenu.visible = true
+	$Control/PauseMenu/VBoxContainer/Restart.text = "Play Again"
 func on_message(msg) -> void:
 	message.text = msg
+
+func _set_paused(on: bool) -> void:
+	get_tree().paused = on
+	$Control/PauseMenu.visible = on
+	$Control/MenuOverlay.visible = on
+
+func _on_sound_toggled(on: bool) -> void:
+	AudioServer.set_bus_mute(AudioServer.get_bus_index("Master"), not on)

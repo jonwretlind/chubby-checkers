@@ -52,4 +52,4 @@ func on_game_ended_sound(_winner) -> void:
 	$SFX/Win.play()
 
 func on_multi_jump(active: bool) -> void:
-	hud.on_message("Multi-Jump!" if active else "")
+	hud.on_message("Keep Jumping!" if active else "")

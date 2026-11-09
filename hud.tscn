@@ -6,6 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://bvkrgxwo6ljbt" path="res://assets/hotdog_sprites@2x.png" id="4_rftc2"]
 [ext_resource type="Texture2D" uid="uid://do2uwuj0ywjgy" path="res://assets/winner-sprite@2x.png" id="5_a2258"]
 [ext_resource type="Texture2D" uid="uid://lqm1tdhqhchs" path="res://assets/draw-sprite@2x.png" id="6_1xsix"]
+[ext_resource type="Texture2D" uid="uid://mwviik2dot7f" path="res://assets/menu-btn@2x.png" id="7_rftc2"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_61f8s"]
 font = ExtResource("2_a2258")
@@ -96,6 +97,25 @@ _data = {
 &"Pop In": SubResource("Animation_1xsix"),
 &"RESET": SubResource("Animation_rftc2")
 }
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_rftc2"]
+content_margin_left = 20.0
+content_margin_top = 20.0
+content_margin_right = 20.0
+content_margin_bottom = 20.0
+bg_color = Color(0.8140656, 0.88396376, 0.7045705, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.56774676, 0.07358124, 0.07578046, 1)
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+corner_radius_bottom_right = 20
+corner_radius_bottom_left = 20
+shadow_color = Color(0, 0, 0, 0.3019608)
+shadow_size = 7
+shadow_offset = Vector2(5, 5)
 
 [node name="Hud" type="Node2D" unique_id=1228932635]
 script = ExtResource("1_640wx")
@@ -213,3 +233,84 @@ theme_override_colors/font_shadow_color = Color(0.38, 0.38, 0.38, 0.72156864)
 theme_override_fonts/font = ExtResource("2_a2258")
 theme_override_font_sizes/font_size = 42
 text = "Hotdogs: 0"
+
+[node name="MenuButton" type="Button" parent="Control" unique_id=140516449]
+layout_mode = 0
+offset_left = 332.0
+offset_top = -42.0
+offset_right = 535.00024
+offset_bottom = 34.0
+scale = Vector2(0.4, 0.4)
+icon = ExtResource("7_rftc2")
+flat = true
+
+[node name="MenuOverlay" type="ColorRect" parent="Control" unique_id=2118431552]
+visible = false
+layout_mode = 0
+offset_left = -58.0
+offset_top = -366.0
+offset_right = 1230.0
+offset_bottom = 294.0
+mouse_filter = 2
+color = Color(0.40339625, 0.40339625, 0.40339625, 0.5529412)
+
+[node name="PauseMenu" type="PanelContainer" parent="Control" unique_id=1700664692]
+process_mode = 3
+visible = false
+layout_mode = 0
+offset_left = 404.0
+offset_top = -176.0
+offset_right = 744.0
+offset_bottom = 63.99997
+theme_override_styles/panel = SubResource("StyleBoxFlat_rftc2")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Control/PauseMenu" unique_id=563410776]
+layout_mode = 2
+
+[node name="Resume" type="Button" parent="Control/PauseMenu/VBoxContainer" unique_id=1125014205]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.62525207, 0.03536033, 0.038283825, 1)
+theme_override_colors/font_focus_color = Color(0, 0.61960787, 0.6666667, 1)
+theme_override_colors/font_pressed_color = Color(0.9843137, 0.6901961, 0.23137255, 1)
+theme_override_colors/font_hover_color = Color(0, 0.61960787, 0.6666667, 1)
+theme_override_fonts/font = ExtResource("2_a2258")
+theme_override_font_sizes/font_size = 28
+text = "Resume"
+flat = true
+alignment = 0
+
+[node name="Restart" type="Button" parent="Control/PauseMenu/VBoxContainer" unique_id=1347722090]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.62525207, 0.03536033, 0.038283825, 1)
+theme_override_colors/font_focus_color = Color(0, 0.61960787, 0.6666667, 1)
+theme_override_colors/font_pressed_color = Color(0.9843137, 0.6901961, 0.23137255, 1)
+theme_override_colors/font_hover_color = Color(0, 0.61960787, 0.6666667, 1)
+theme_override_fonts/font = ExtResource("2_a2258")
+theme_override_font_sizes/font_size = 28
+text = "Restart New Game"
+flat = true
+alignment = 0
+
+[node name="MainMenu" type="Button" parent="Control/PauseMenu/VBoxContainer" unique_id=1100681229]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.62525207, 0.03536033, 0.038283825, 1)
+theme_override_colors/font_focus_color = Color(0, 0.61960787, 0.6666667, 1)
+theme_override_colors/font_pressed_color = Color(0.9843137, 0.6901961, 0.23137255, 1)
+theme_override_colors/font_hover_color = Color(0, 0.61960787, 0.6666667, 1)
+theme_override_fonts/font = ExtResource("2_a2258")
+theme_override_font_sizes/font_size = 28
+text = "Main Menu"
+flat = true
+alignment = 0
+
+[node name="Sound" type="CheckButton" parent="Control/PauseMenu/VBoxContainer" unique_id=402995623]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.62525207, 0.03536033, 0.038283825, 1)
+theme_override_colors/font_focus_color = Color(0, 0.61960787, 0.6666667, 1)
+theme_override_colors/font_pressed_color = Color(0, 0.61960787, 0.6666667, 1)
+theme_override_colors/font_hover_color = Color(0, 0.61960787, 0.6666667, 1)
+theme_override_fonts/font = ExtResource("2_a2258")
+theme_override_font_sizes/font_size = 28
+button_pressed = true
+text = "Sound On/Off "
+flat = true

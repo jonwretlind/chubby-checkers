@@ -11,9 +11,18 @@ config_version=5
 [application]
 
 config/name="Chubby Checkers"
-run/main_scene="uid://bgttybnh04jb8"
+config/description="Chubby Checkers is a 2D checkers game in Godot 4 with a 1950s diner theme: Hamburgers v. Hotdogs on a red-and-cream checkered tablecloth with a groovy retro touch."
+run/main_scene="uid://0ql36nplnxlq"
 config/features=PackedStringArray("4.7", "Mobile")
 config/icon="res://icon.svg"
+
+[audio]
+
+buses/default_bus_layout="uid://cmqq7gm6r5xwj"
+
+[autoload]
+
+GameSettings="*uid://d4sahvlufmcr"
 
 [display]
 
