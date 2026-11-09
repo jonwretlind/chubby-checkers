@@ -84,7 +84,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		else:
 			play_move(selected_cell, cell)
 			message.emit("")
-	print_grid() # for debugging
+	#print_grid() # for debugging
 	
 # Painting
 func _draw() -> void:
@@ -217,17 +217,14 @@ func end_turn() -> void :
 		game_over = true
 		var draw = "DRAW!"
 		game_ended.emit(Team.NONE)
-		print("It's a DRAW!")
 		return
 	if not team_has_any_move(current_turn):
 		game_over = true
 		var winner := Team.BURGER if current_turn == Team.HOTDOG else Team.HOTDOG
-		print(Team.keys()[winner], " WINS!")
 		game_ended.emit(winner)
 		return
 	turn_changed.emit(current_turn)
 	if is_computer_turn(): computer_move()
-	print("Turn: ", Team.keys()[current_turn])
 	
 
 func move_piece(from: Vector2i, to: Vector2i) -> void :
@@ -273,7 +270,6 @@ func capture(from: Vector2i, to: Vector2i) -> void:
 	remove_piece(middle)
 	captured[current_turn] += 1
 	piece_captured.emit(current_turn, captured[current_turn])
-	print(pieces.keys())
 
 func captures_from(cell: Vector2i) -> Array[Vector2i]:
 	var result: Array[Vector2i] = []
