@@ -1,0 +1,15 @@
+[gd_scene format=3 uid="uid://71gbcex8ecke"]
+
+[ext_resource type="Script" uid="uid://5c0qnr5mdgt3" path="res://transition.gd" id="1_2gi1b"]
+
+[node name="Transition" type="CanvasLayer" unique_id=2135899880]
+process_mode = 3
+layer = 100
+script = ExtResource("1_2gi1b")
+
+[node name="Fade" type="ColorRect" parent="." unique_id=1195434417]
+modulate = Color(0.89, 0.8633, 0.7298, 0)
+offset_right = 1288.0
+offset_bottom = 658.0
+mouse_filter = 2
+color = Color(0.8901961, 0.8627451, 0.7294118, 1)

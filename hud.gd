@@ -7,8 +7,8 @@ extends Node2D
 func _ready() -> void:
 	$Control/MenuButton.pressed.connect(_set_paused.bind(true))
 	$Control/PauseMenu/VBoxContainer/Resume.pressed.connect(_set_paused.bind(false))
-	$Control/PauseMenu/VBoxContainer/Restart.pressed.connect(func(): _set_paused(false); get_tree().reload_current_scene())
-	$Control/PauseMenu/VBoxContainer/MainMenu.pressed.connect(func(): _set_paused(false); get_tree().change_scene_to_file("res://title.tscn"))
+	$Control/PauseMenu/VBoxContainer/Restart.pressed.connect(func(): _set_paused(false); Transition.reload())
+	$Control/PauseMenu/VBoxContainer/MainMenu.pressed.connect(func(): _set_paused(false); Transition.change_scene("res://title.tscn"))
 	$Control/PauseMenu/VBoxContainer/Sound.toggled.connect(_on_sound_toggled)
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.

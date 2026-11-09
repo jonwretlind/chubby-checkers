@@ -4,6 +4,7 @@ const DEPTHS := { "Easy": 1, "Medium": 3, "Hard": 5 }
 
 @onready var side_row: HBoxContainer = $BtnContainer/SideRow
 @onready var difficulty_row: HBoxContainer = $BtnContainer/DifficultyRow
+@onready var main = $Main
 
 func _ready() -> void:
 	$BtnContainer/Players/OnePlayer.pressed.connect(_on_players.bind(true))
@@ -32,4 +33,6 @@ func _on_difficulty(depth: int) -> void:
 	GameSettings.ai_depth = depth
 
 func _on_start() -> void:
-	get_tree().change_scene_to_file("res://main.tscn")
+	var t := create_tween()
+	t.tween_property($AudioStreamPlayer, "volume_db", -40.0, 0.35)
+	Transition.change_scene("res://main.tscn")

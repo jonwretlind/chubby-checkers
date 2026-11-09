@@ -9,6 +9,7 @@
 [ext_resource type="Texture2D" uid="uid://bqxkpvbaq7oq3" path="res://assets/hotdog-pressed@2x.png" id="6_lx2ly"]
 [ext_resource type="Texture2D" uid="uid://bfqoi35ksele4" path="res://assets/start-btn@2x.png" id="7_0824t"]
 [ext_resource type="Texture2D" uid="uid://b3hrx07m38jat" path="res://assets/start-btn-hover@2x.png" id="8_nuqgq"]
+[ext_resource type="AudioStream" uid="uid://dd4mo2ggclrp2" path="res://audio/music/jumpingbunny-boog-wop-313917.mp3" id="10_jil77"]
 
 [sub_resource type="ButtonGroup" id="ButtonGroup_jil77"]
 
@@ -216,3 +217,8 @@ texture_pressed = ExtResource("8_nuqgq")
 texture_hover = ExtResource("8_nuqgq")
 texture_focused = ExtResource("8_nuqgq")
 stretch_mode = 0
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=1592953178]
+stream = ExtResource("10_jil77")
+volume_db = -7.28
+autoplay = true

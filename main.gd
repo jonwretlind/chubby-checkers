@@ -53,3 +53,7 @@ func on_game_ended_sound(_winner) -> void:
 
 func on_multi_jump(active: bool) -> void:
 	hud.on_message("Keep Jumping!" if active else "")
+
+func fade_music() -> void:
+	var t := create_tween()
+	t.tween_property($SFX/Music, "volume_db", -40.0, 0.35)
